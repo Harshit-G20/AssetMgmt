@@ -1,31 +1,22 @@
-const apiGatewayUrl = "https://xyz.execute-api.us-east-1.amazonaws.com/prod/upload-asset";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asset Management System</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Asset Management System</h1>
 
-async function uploadFile() {
-    const file = document.getElementById('fileUpload').files[0];
-    if (!file) {
-        alert("Please select a file.");
-        return;
-    }
+    <h2>Upload Asset Data</h2>
+    <input type="file" id="fileUpload">
+    <button onclick="uploadFile()">Upload</button>
 
-    const reader = new FileReader();
-    reader.readAsText(file);
-    reader.onload = async function () {
-        const fileContent = btoa(reader.result); // Convert to Base64
-        const assetId = file.name.split('.')[0]; // Extract asset ID from filename
+    <h2>View Uploaded Assets</h2>
+    <button onclick="fetchAssets()">Fetch Asset List</button>
+    <ul id="assetList"></ul>
 
-        const response = await fetch(apiGatewayUrl, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                asset_id: assetId,
-                file_content: fileContent
-            })
-        });
-
-        if (response.ok) {
-            alert("File uploaded successfully!");
-        } else {
-            alert("Upload failed.");
-        }
-    };
-}
+    <script src="app.js"></script>
+</body>
+</html>
