@@ -1,44 +1,52 @@
-import React, { useState } from 'react';
-import { API } from 'aws-amplify';
+const apiGatewayUrl = "https://your-api-gateway-url"; // Replace with your API Gateway URL
 
-function App() {
-  const [file, setFile] = useState(null);
-  const apiName = "AssetUploadAPI"; // Your API name
-  const path = "/upload-asset"; // API Gateway endpoint
-
-  const uploadFile = async () => {
+async function uploadFile() {
+    const file = document.getElementById('fileUpload').files[0];
     if (!file) {
-      alert("Select a file first!");
-      return;
+        alert("Please select a file first.");
+        return;
     }
 
     const reader = new FileReader();
     reader.readAsText(file);
-    reader.onload = async () => {
-      const fileContent = btoa(reader.result); // Convert file to Base64
-      const assetId = file.name.split('.')[0];
+    reader.onload = async function () {
+        const fileContent = btoa(reader.result); // Convert to Base64
+        const assetId = file.name.split('.')[0]; // Extract asset ID
 
-      try {
-        await API.post(apiName, path, {
-          body: {
-            asset_id: assetId,
-            file_content: fileContent
-          }
-        });
-        alert("File uploaded successfully!");
-      } catch (err) {
-        alert("Upload failed.");
-      }
+        try {
+            const response = await fetch(apiGatewayUrl, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    asset_id: assetId,
+                    file_content: fileContent
+                })
+            });
+
+            if (response.ok) {
+                alert("File uploaded successfully!");
+            } else {
+                alert("Upload failed.");
+            }
+        } catch (err) {
+            alert("Error: " + err.message);
+        }
     };
-  };
-
-  return (
-    <div>
-      <h1>Asset Management System</h1>
-      <input type="file" onChange={(e) => setFile(e.target.files[0])} />
-      <button onClick={uploadFile}>Upload Asset</button>
-    </div>
-  );
 }
 
-export default App;
+async function fetchAssets() {
+    try {
+        const response = await fetch(`${apiGatewayUrl}/list-assets`);
+        const assets = await response.json();
+
+        const assetList = document.getElementById('assetList');
+        assetList.innerHTML = "";
+        assets.forEach(asset => {
+            const li = document.createElement("li");
+            li.textContent = asset;
+            assetList.appendChild(li);
+        });
+    } catch (err) {
+        alert("Error fetching assets: " + err.message);
+    }
+}
