@@ -1,52 +1,27 @@
-const apiGatewayUrl = "https://nb81gpwesk.execute-api.us-east-1.amazonaws.com/Prod/upload-asset"; // Replace with your API Gateway URL
+const apiGatewayUrl = "https://xyz.execute-api.us-east-1.amazonaws.com/prod/assets"; // Replace with your API Gateway URL
 
-async function uploadFile() {
-    const file = document.getElementById('fileUpload').files[0];
-    if (!file) {
-        alert("Please select a file first.");
-        return;
-    }
-
-    const reader = new FileReader();
-    reader.readAsText(file);
-    reader.onload = async function () {
-        const fileContent = btoa(reader.result); // Convert to Base64
-        const assetId = file.name.split('.')[0]; // Extract asset ID
-
-        try {
-            const response = await fetch(apiGatewayUrl, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    asset_id: assetId,
-                    file_content: fileContent
-                })
-            });
-
-            if (response.ok) {
-                alert("File uploaded successfully!");
-            } else {
-                alert("Upload failed.");
-            }
-        } catch (err) {
-            alert("Error: " + err.message);
-        }
+async function sendAssetData() {
+    const assetData = {
+        asset_id: "001",
+        name: "Cisco Catalyst 9300",
+        category: "Networking"
     };
-}
 
-async function fetchAssets() {
     try {
-        const response = await fetch(`${apiGatewayUrl}/list-assets`);
-        const assets = await response.json();
-
-        const assetList = document.getElementById('assetList');
-        assetList.innerHTML = "";
-        assets.forEach(asset => {
-            const li = document.createElement("li");
-            li.textContent = asset;
-            assetList.appendChild(li);
+        const response = await fetch(apiGatewayUrl, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(assetData)
         });
-    } catch (err) {
-        alert("Error fetching assets: " + err.message);
+
+        const result = await response.json();
+        alert("Response: " + result);
+    } catch (error) {
+        alert("Error: " + error.message);
     }
 }
+
+// Call function on button click
+document.getElementById("sendDataButton").addEventListener("click", sendAssetData);
