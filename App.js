@@ -1,4 +1,4 @@
-const apiGatewayUrl = "https://vmtgsd9upg.execute-api.us-east-1.amazonaws.com/Test/pload-asset"; // Replace with your API Gateway URL
+const apiGatewayUrl = "https://nb81gpwesk.execute-api.us-east-1.amazonaws.com/Prod/upload-asset"; // Replace with your API Gateway URL
 
 async function uploadFile() {
     const file = document.getElementById('fileUpload').files[0];
